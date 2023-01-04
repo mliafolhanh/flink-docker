@@ -47,7 +47,8 @@ RUN set -ex; \
 ENV FLINK_TGZ_URL=https://www.apache.org/dyn/closer.cgi?action=download&filename=flink/flink-1.15.3/flink-1.15.3-bin-scala_2.12.tgz \
     FLINK_ASC_URL=https://www.apache.org/dist/flink/flink-1.15.3/flink-1.15.3-bin-scala_2.12.tgz.asc \
     GPG_KEY=90755B0A184BD9FFD22B6BE19D4F76C84EC11E37 \
-    CHECK_GPG=true
+    CHECK_GPG=true \
+    REST_PORT=8081
 
 # Prepare environment
 ENV FLINK_HOME=/opt/flink
@@ -83,6 +84,7 @@ RUN set -ex; \
   # Replace default REST/RPC endpoint bind address to use the container's network interface \
   sed -i 's/rest.address: localhost/rest.address: 0.0.0.0/g' $FLINK_HOME/conf/flink-conf.yaml; \
   sed -i 's/rest.bind-address: localhost/rest.bind-address: 0.0.0.0/g' $FLINK_HOME/conf/flink-conf.yaml; \
+  sed -i 's/#rest.port: 8081/rest.port: ${REST_PORT}/g' $FLINK_HOME/conf/flink-conf.yaml; \
   sed -i 's/jobmanager.bind-host: localhost/jobmanager.bind-host: 0.0.0.0/g' $FLINK_HOME/conf/flink-conf.yaml; \
   sed -i 's/taskmanager.bind-host: localhost/taskmanager.bind-host: 0.0.0.0/g' $FLINK_HOME/conf/flink-conf.yaml; \
   sed -i '/taskmanager.host: localhost/d' $FLINK_HOME/conf/flink-conf.yaml;
@@ -90,5 +92,5 @@ RUN set -ex; \
 # Configure container
 COPY docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
-EXPOSE 6123 8081
+EXPOSE 6123 $REST_PORT
 CMD ["help"]
