@@ -48,7 +48,11 @@ ENV FLINK_TGZ_URL=https://www.apache.org/dyn/closer.cgi?action=download&filename
     FLINK_ASC_URL=https://www.apache.org/dist/flink/flink-1.15.3/flink-1.15.3-bin-scala_2.12.tgz.asc \
     GPG_KEY=90755B0A184BD9FFD22B6BE19D4F76C84EC11E37 \
     CHECK_GPG=true \
-    REST_PORT=8081
+    REST_PORT=8081 \
+    HADOOP_PATH=hdfs://namenode:8020/ \
+    HADOOP_HOME=/opt/hadoop-2.7.4 \
+    HADOOP_CONF_DIR=/etc/hadoop \
+    HADOOP_VERSION=27
 
 # Prepare environment
 ENV FLINK_HOME=/opt/flink
@@ -81,6 +85,10 @@ RUN set -ex; \
   \
   chown -R flink:flink .; \
   \
+
+  #Download dependencies
+  curl -o /opt/flink/lib/flink-shaded-hadoop-2-uber-2.7.5-8.0.jar https://repo.maven.apache.org/malven2/org/apache/flink/flink-shaded-hadoop-2-uber/2.7.5-8.0/flink-shaded-hadoop-2-uber-2.7.5-8.0.jar; \
+
   # Replace default REST/RPC endpoint bind address to use the container's network interface \
   sed -i 's/rest.address: localhost/rest.address: 0.0.0.0/g' $FLINK_HOME/conf/flink-conf.yaml; \
   sed -i 's/rest.bind-address: localhost/rest.bind-address: 0.0.0.0/g' $FLINK_HOME/conf/flink-conf.yaml; \
@@ -88,7 +96,6 @@ RUN set -ex; \
   sed -i 's/jobmanager.bind-host: localhost/jobmanager.bind-host: 0.0.0.0/g' $FLINK_HOME/conf/flink-conf.yaml; \
   sed -i 's/taskmanager.bind-host: localhost/taskmanager.bind-host: 0.0.0.0/g' $FLINK_HOME/conf/flink-conf.yaml; \
   sed -i '/taskmanager.host: localhost/d' $FLINK_HOME/conf/flink-conf.yaml;
-
 # Configure container
 COPY docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
