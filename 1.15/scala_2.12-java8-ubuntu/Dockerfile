@@ -52,7 +52,7 @@ ENV FLINK_TGZ_URL=https://www.apache.org/dyn/closer.cgi?action=download&filename
     HADOOP_PATH=hdfs://namenode:8020/ \
     HADOOP_HOME=/opt/hadoop-2.7.4 \
     HADOOP_CONF_DIR=/etc/hadoop \
-    HADOOP_VERSION=27
+    HADOOP_VERSION=2.7.4
 
 # Prepare environment
 ENV FLINK_HOME=/opt/flink
@@ -95,7 +95,7 @@ RUN set -ex; \
   sed -i 's/#rest.port: 8081/rest.port: ${REST_PORT}/g' $FLINK_HOME/conf/flink-conf.yaml; \
   sed -i 's/jobmanager.bind-host: localhost/jobmanager.bind-host: 0.0.0.0/g' $FLINK_HOME/conf/flink-conf.yaml; \
   sed -i 's/taskmanager.bind-host: localhost/taskmanager.bind-host: 0.0.0.0/g' $FLINK_HOME/conf/flink-conf.yaml; \
-  sed -i '/taskmanager.host: localhost/d' $FLINK_HOME/conf/flink-conf.yaml;
+  sed -i '/taskmanager.host: localhost/d' $FLINK_HOME/conf/flink-cqonf.yaml;
 # Configure container
 COPY docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]

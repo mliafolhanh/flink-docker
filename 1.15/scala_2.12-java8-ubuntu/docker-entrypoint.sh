@@ -124,13 +124,20 @@ if [ "$1" = "help" ]; then
 elif [ "$1" = "jobmanager" ]; then
     args=("${args[@]:1}")
 
-    echo "Starting Job Manager"
+    echo "export HADOOP_CLASSPATH=\$(find \$HADOOP_HOME -name '*.jar' | xargs echo | tr ' ' ':')" >> ~/.profile
+    source ~/.profile
+
+
+    echo "Starting Job Manager haha:  $HADOOP_CLASSPATH"
 
     exec $(drop_privs_cmd) "$FLINK_HOME/bin/jobmanager.sh" start-foreground "${args[@]}"
 elif [ "$1" = ${COMMAND_STANDALONE} ]; then
     args=("${args[@]:1}")
 
-    echo "Starting Job Manager"
+    echo "export HADOOP_CLASSPATH=\$(find \$HADOOP_HOME -name '*.jar' | xargs echo | tr ' ' ':')" >> ~/.profile
+    source ~/.profile
+
+    echo "Starting Job Manager: $HADOOP_CLASSPATH"
 
     exec $(drop_privs_cmd) "$FLINK_HOME/bin/standalone-job.sh" start-foreground "${args[@]}"
 elif [ "$1" = ${COMMAND_HISTORY_SERVER} ]; then
@@ -141,6 +148,9 @@ elif [ "$1" = ${COMMAND_HISTORY_SERVER} ]; then
     exec $(drop_privs_cmd) "$FLINK_HOME/bin/historyserver.sh" start-foreground "${args[@]}"
 elif [ "$1" = "taskmanager" ]; then
     args=("${args[@]:1}")
+
+    echo "export HADOOP_CLASSPATH=\$(find \$HADOOP_HOME -name '*.jar' | xargs echo | tr ' ' ':')" >> ~/.profile
+    source ~/.profile
 
     echo "Starting Task Manager"
 
